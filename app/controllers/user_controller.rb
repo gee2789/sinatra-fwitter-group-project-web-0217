@@ -33,18 +33,26 @@ class UserController < ApplicationController
 
   post '/login' do
     # binding.pry
-    @user = User.all.find_by(username: params["username"], password: params["password"])
-    session[:id] = @user.id
-    redirect '/tweets'
+    if @user = User.all.find_by(username: params["username"], password: params["password"])
+      session[:id] = @user.id
+      redirect '/tweets'
+    else
+      redirect '/login'
+    end
   end
 
   get '/logout' do
     if session[:id] != nil
       session.clear
-      redirect '/users/login'
+      redirect '/login'
     else
       redirect '/'
     end
+  end
+
+  get '/users/:slug' do
+    @users = User.find_by_slug(params["slug"])
+    erb :'users/show'
   end
 
 
